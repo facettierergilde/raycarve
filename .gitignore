@@ -1,0 +1,11 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Local build output (published zips live in website/downloads/)
+dist/
+
+# OS / editor files
+Thumbs.db
+.DS_Store
+.vscode/

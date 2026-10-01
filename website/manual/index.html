@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RayCarve – Handbuch / Manual</title>
+  <meta name="description" content="RayCarve user manual – versioned, in German and English.">
+  <meta name="site-root" content="../">
+  <meta name="theme-color" content="#0b0f18">
+  <link rel="icon" href="../assets/gem.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    (function () {
+      var l = new URLSearchParams(location.search).get("lang");
+      try { l = l || localStorage.getItem("raycarve-lang"); } catch (e) {}
+      if (l !== "de" && l !== "en") l = /^de\b/i.test(navigator.language || "") ? "de" : "en";
+      document.documentElement.setAttribute("data-lang", l);
+      document.documentElement.setAttribute("lang", l);
+    })();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="../"><img src="../assets/gem.svg" alt="" width="28" height="28">RayCarve</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="../#features"><span data-l="de">Funktionen</span><span data-l="en">Features</span></a>
+      <a href="../#download">Download</a>
+      <a href="./" aria-current="page"><span data-l="de">Handbuch</span><span data-l="en">Manual</span></a>
+      <a href="../#gilde"><span data-l="de">Gilde</span><span data-l="en">Guild</span></a>
+      <a href="../#kaffee"><span data-l="de">Kaffee spendieren</span><span data-l="en">Buy a coffee</span></a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-set-lang="de" aria-pressed="false"><span>DE</span></button>
+      <button type="button" data-set-lang="en" aria-pressed="false"><span>EN</span></button>
+    </div>
+  </div>
+</header>
+
+<div class="manual-bar">
+  <div class="wrap">
+    <h1><span data-l="de">Handbuch</span><span data-l="en">Manual</span></h1>
+    <div class="controls">
+      <label for="version-select">Version</label>
+      <select id="version-select"><option>…</option></select>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="notice" id="version-notice" hidden></p>
+  <div class="manual-layout">
+    <nav class="toc" aria-label="Contents">
+      <details open>
+        <summary><span data-l="de">Inhalt</span><span data-l="en">Contents</span></summary>
+        <ul id="toc-list"></ul>
+      </details>
+    </nav>
+    <article class="doc" id="doc">
+      <noscript><p class="doc-status">This manual needs JavaScript. / Das Handbuch benötigt JavaScript.</p></noscript>
+    </article>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap row">
+    <div>© 2018–2026 Tobias Wüthrich · Facettierergilde Schweiz · GPL-3.0-or-later</div>
+    <nav aria-label="Footer">
+      <a href="../"><span data-l="de">Startseite</span><span data-l="en">Home</span></a>
+      <a href="../#download">Download</a>
+      <a href="https://www.facettieren.ch" target="_blank" rel="noopener">facettieren.ch</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/site.js" defer></script>
+<script src="../assets/manual.js" defer></script>
+</body>
+</html>

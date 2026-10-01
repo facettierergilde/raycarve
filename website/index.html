@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RayCarve – Konkavschliffe in Blender planen</title>
+  <meta name="title-de" content="RayCarve – Konkavschliffe in Blender planen">
+  <meta name="title-en" content="RayCarve – Plan concave gem cuts in Blender">
+  <meta name="description" content="RayCarve is a free Blender extension to plan and simulate concave gemstone faceting, made in the circle of the Facettierergilde Schweiz.">
+  <meta name="site-root" content="./">
+  <meta name="theme-color" content="#0b0f18">
+  <meta property="og:title" content="RayCarve – concave faceting in Blender">
+  <meta property="og:description" content="Plan and simulate concave gemstone cuts before the stone touches the machine.">
+  <meta property="og:image" content="assets/gem.svg">
+  <link rel="icon" href="assets/gem.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    /* set language before first paint (full logic in site.js) */
+    (function () {
+      var l = new URLSearchParams(location.search).get("lang");
+      try { l = l || localStorage.getItem("raycarve-lang"); } catch (e) {}
+      if (l !== "de" && l !== "en") l = /^de\b/i.test(navigator.language || "") ? "de" : "en";
+      document.documentElement.setAttribute("data-lang", l);
+      document.documentElement.setAttribute("lang", l);
+    })();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="./"><img src="assets/gem.svg" alt="" width="28" height="28">RayCarve</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#features"><span data-l="de">Funktionen</span><span data-l="en">Features</span></a>
+      <a href="#download">Download</a>
+      <a href="manual/"><span data-l="de">Handbuch</span><span data-l="en">Manual</span></a>
+      <a href="#gilde"><span data-l="de">Gilde</span><span data-l="en">Guild</span></a>
+      <a href="#kaffee"><span data-l="de">Kaffee spendieren</span><span data-l="en">Buy a coffee</span></a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-set-lang="de" aria-pressed="false"><span>DE</span></button>
+      <button type="button" data-set-lang="en" aria-pressed="false"><span>EN</span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">
+          <span data-l="de">Blender-Erweiterung für Edelsteinschleifer</span>
+          <span data-l="en">Blender extension for gem cutters</span>
+        </div>
+        <h1 id="hero-title"><span class="grad">RayCarve</span></h1>
+        <p class="lead" data-l="de">
+          Plane und simuliere <strong>Konkavschliffe</strong> direkt in Blender. Stelle Winkel, Index und Höhe ein
+          wie an deiner echten Maschine – und sieh das Ergebnis, bevor der Stein die Schleifscheibe berührt.
+        </p>
+        <p class="lead" data-l="en">
+          Plan and simulate <strong>concave gemstone cuts</strong> right in Blender. Dial in angle, index and height
+          just like on your real machine – and see the result before the stone ever touches the lap.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" data-download href="downloads/RayCarve-1.16.0.zip" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span data-l="de">Download v<span data-version>1.16.0</span></span>
+            <span data-l="en">Download v<span data-version>1.16.0</span></span>
+          </a>
+          <a class="btn btn-ghost" href="manual/">
+            <span data-l="de">Zum Handbuch</span><span data-l="en">Read the manual</span>
+          </a>
+        </div>
+        <div class="hero-meta">
+          <span data-l="de">Kostenlos &amp; Open Source</span><span data-l="en">Free &amp; open source</span>
+          <span>Blender <span data-blender-min>4.5</span>+</span>
+          <span>Windows · macOS · Linux</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <img src="assets/gem.svg" alt="" width="440" height="440">
+        <svg class="spark" style="left:22%;top:18%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.5 5.5 11.4 12 12-6.5.6-11.4 5.5-12 12-.6-6.5-5.5-11.4-12-12C6.5 11.4 11.4 6.5 12 0z"/></svg>
+        <svg class="spark s2" style="left:70%;top:30%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.5 5.5 11.4 12 12-6.5.6-11.4 5.5-12 12-.6-6.5-5.5-11.4-12-12C6.5 11.4 11.4 6.5 12 0z"/></svg>
+        <svg class="spark s3" style="left:40%;top:66%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.5 5.5 11.4 12 12-6.5.6-11.4 5.5-12 12-.6-6.5-5.5-11.4-12-12C6.5 11.4 11.4 6.5 12 0z"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker"><span data-l="de">Funktionen</span><span data-l="en">Features</span></div>
+        <h2 id="features-title">
+          <span data-l="de">Deine Konkavmaschine – virtuell</span>
+          <span data-l="en">Your concave machine – in virtual form</span>
+        </h2>
+        <p data-l="de">RayCarve schneidet einen 3D-Stein mit dem Modell deines Schleifwerkzeugs. Jeder Schnitt wird protokolliert, lässt sich ändern und jederzeit neu berechnen.</p>
+        <p data-l="en">RayCarve cuts a 3D stone with a model of your cutting tool. Every cut is logged, can be edited and replayed at any time.</p>
+      </div>
+
+      <div class="features">
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="m3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+          <h3><span data-l="de">Stein importieren</span><span data-l="en">Import your stone</span></h3>
+          <p data-l="de">STL-Modelle oder GCS-Dateien aus Facetten-Designprogrammen – automatisch auf die gewünschte Länge skaliert, in Millimetern.</p>
+          <p data-l="en">STL meshes or GCS files from faceting design tools – automatically scaled to your target length, in millimetres.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+          <h3><span data-l="de">Werkzeuge erzeugen</span><span data-l="en">Build your tools</span></h3>
+          <p data-l="de">Runde Walzen und V-Walzen (gerade oder rund) mit wählbarem Durchmesser, Winkel und abgerundeter Spitze.</p>
+          <p data-l="en">Round mandrels and V-groove mandrels (slot or round) with adjustable diameter, angle and rounded tip.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M4 20 16 8"/><path d="M9 20a5 5 0 0 0-1.5-3.5"/><circle cx="18" cy="6" r="2.5"/></svg></div>
+          <h3><span data-l="de">Wie an der Maschine</span><span data-l="en">Just like the machine</span></h3>
+          <p data-l="de">Indexrad, Facettenwinkel, Steinhöhe und -position, Walzenposition und -drehung, Pavillon oder Krone.</p>
+          <p data-l="en">Index gear, facet angle, stone height and position, mandrel position and rotation, pavilion or crown.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <h3><span data-l="de">Erst Vorschau, dann Schnitt</span><span data-l="en">Preview, then cut</span></h3>
+          <p data-l="de">Jeder Schnitt erscheint zuerst als Vorschau. Passt er, wird er mit einem Klick übernommen.</p>
+          <p data-l="en">Every cut shows up as a live preview first. When it looks right, apply it with one click.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+          <h3><span data-l="de">Ganze Reihen auf einmal</span><span data-l="en">Whole rows at once</span></h3>
+          <p data-l="de">Mit Symmetrie und Spiegelung alle Indexpositionen einer Facettenreihe in einem Durchgang schleifen.</p>
+          <p data-l="en">Use symmetry and mirror to cut every index position of a facet row in a single pass.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+          <h3><span data-l="de">Schleiftabelle &amp; Anleitung</span><span data-l="en">Cut table &amp; instructions</span></h3>
+          <p data-l="de">Alle Schnitte in einer Tabelle: einzelne Zeilen deaktivieren, neu schleifen lassen und die Anleitung für die Maschine exportieren.</p>
+          <p data-l="en">All cuts in one table: disable rows, replay the whole stone and export step-by-step instructions for the machine.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORKFLOW ============ -->
+  <section class="alt" aria-labelledby="workflow-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker"><span data-l="de">Ablauf</span><span data-l="en">Workflow</span></div>
+        <h2 id="workflow-title"><span data-l="de">In fünf Schritten zum Konkavschliff</span><span data-l="en">Five steps to a concave cut</span></h2>
+      </div>
+      <ol class="steps">
+        <li><h3><span data-l="de">Stein laden</span><span data-l="en">Load stone</span></h3>
+          <p data-l="de">STL oder GCS importieren, Länge festlegen.</p><p data-l="en">Import STL or GCS, set the length.</p></li>
+        <li><h3><span data-l="de">Walze wählen</span><span data-l="en">Pick a mandrel</span></h3>
+          <p data-l="de">Runde oder V-Walze passend zu deinem Werkzeug.</p><p data-l="en">Round or V-mandrel matching your tool.</p></li>
+        <li><h3><span data-l="de">Maschine einrichten</span><span data-l="en">Set up machine</span></h3>
+          <p data-l="de">Indexrad und Objekte zuweisen.</p><p data-l="en">Assign index gear and objects.</p></li>
+        <li><h3><span data-l="de">Schleifen</span><span data-l="en">Carve</span></h3>
+          <p data-l="de">Vorschau prüfen, übernehmen, wiederholen.</p><p data-l="en">Check the preview, apply, repeat.</p></li>
+        <li><h3><span data-l="de">Anleitung sichern</span><span data-l="en">Save instructions</span></h3>
+          <p data-l="de">Schleifprotokoll für die Maschine speichern.</p><p data-l="en">Save the cut log for the machine.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ DOWNLOAD ============ -->
+  <section id="download" aria-labelledby="download-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Download</div>
+        <h2 id="download-title"><span data-l="de">RayCarve herunterladen</span><span data-l="en">Get RayCarve</span></h2>
+        <p data-l="de">RayCarve ist kostenlos und steht unter der GPL-3.0-Lizenz.</p>
+        <p data-l="en">RayCarve is free and licensed under the GPL-3.0.</p>
+      </div>
+      <div class="download-grid">
+        <div class="card dl-card">
+          <div class="kicker" style="font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">
+            <span data-l="de">Aktuelle Version</span><span data-l="en">Latest version</span>
+          </div>
+          <div class="version">v<span data-version>1.16.0</span></div>
+          <div class="sub"><span data-l="de">Blender-Erweiterung (.zip)</span><span data-l="en">Blender extension (.zip)</span></div>
+          <a class="btn btn-primary" data-download href="downloads/RayCarve-1.16.0.zip" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span>RayCarve-<span data-version>1.16.0</span>.zip</span>
+          </a>
+          <ul class="facts">
+            <li><span>Blender</span><span><span data-blender-min>4.5</span> <span data-l="de">oder neuer</span><span data-l="en">or newer</span></span></li>
+            <li><span data-l="de">Lizenz</span><span data-l="en">License</span><span>GPL-3.0-or-later</span></li>
+            <li><span data-l="de">Autor</span><span data-l="en">Author</span><span>Tobias Wüthrich</span></li>
+            <li><span data-l="de">Handbuch</span><span data-l="en">Manual</span><span><a href="manual/">v<span data-version>1.16.0</span> →</a></span></li>
+          </ul>
+          <p class="older" id="older-versions" hidden>
+            <span data-l="de">Frühere Versionen:</span><span data-l="en">Previous versions:</span> <span class="list"></span>
+          </p>
+        </div>
+        <div class="card dl-card install">
+          <h3><span data-l="de">Installation</span><span data-l="en">Installation</span></h3>
+          <ol data-l="de">
+            <li>ZIP-Datei herunterladen – <strong>nicht entpacken</strong>.</li>
+            <li>In Blender <strong>Edit → Preferences → Get Extensions</strong> öffnen (Bearbeiten → Einstellungen).</li>
+            <li>Oben rechts auf <strong>⌄</strong> klicken, <strong>Install from Disk…</strong> wählen und die ZIP-Datei öffnen.</li>
+            <li>In der 3D-Ansicht <kbd>N</kbd> drücken – das Panel findest du im Reiter <strong>RayCarve</strong>.</li>
+          </ol>
+          <ol data-l="en">
+            <li>Download the ZIP file – <strong>don't unzip it</strong>.</li>
+            <li>In Blender, open <strong>Edit → Preferences → Get Extensions</strong>.</li>
+            <li>Click <strong>⌄</strong> in the top-right corner, choose <strong>Install from Disk…</strong> and select the ZIP.</li>
+            <li>In the 3D Viewport press <kbd>N</kbd> – you'll find the panel in the <strong>RayCarve</strong> tab.</li>
+          </ol>
+          <p class="older" data-l="de">Update: Einfach die neue ZIP-Datei gleich installieren und Blender neu starten.</p>
+          <p class="older" data-l="en">Updating: install the new ZIP the same way, then restart Blender.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GUILD + COFFEE ============ -->
+  <section id="gilde" class="alt" aria-labelledby="guild-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker"><span data-l="de">Die Gilde</span><span data-l="en">The guild</span></div>
+        <h2 id="guild-title">Facettierergilde Schweiz</h2>
+      </div>
+      <div class="guild-grid">
+        <div class="card guild-card">
+          <p data-l="de">
+            Die Facettierergilde Schweiz ist ein Verein von Edelsteinschleiferinnen und Edelsteinschleifern.
+            Sie fördert den Kontakt unter den Schleifern, will das Facettieren bekannter machen und hilft,
+            das Können ihrer Mitglieder weiterzuentwickeln – mit regelmässigen Treffen, Kursen, Workshops
+            und Wettbewerben wie der European Open.
+          </p>
+          <p data-l="de">RayCarve ist im Umfeld der Gilde entstanden und wird allen Schleifern kostenlos zur Verfügung gestellt.</p>
+          <p data-l="en">
+            The Facettierergilde Schweiz (Swiss Faceters' Guild) is an association of gem cutters. It brings cutters
+            together, makes faceting better known and helps its members develop their skills – with regular meetings,
+            courses, workshops and competitions such as the European Open.
+          </p>
+          <p data-l="en">RayCarve was created within the guild and is offered free of charge to all cutters.</p>
+          <div class="facts-inline">
+            <span class="pill"><span data-l="de">Gegründet 2016</span><span data-l="en">Founded 2016</span></span>
+            <span class="pill"><span data-l="de">Monatliche Treffen</span><span data-l="en">Monthly meetings</span></span>
+            <span class="pill"><span data-l="de">Kurse &amp; Workshops</span><span data-l="en">Courses &amp; workshops</span></span>
+            <span class="pill">European Open</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <a class="btn btn-primary" href="https://www.facettieren.ch" target="_blank" rel="noopener">facettieren.ch ↗</a>
+            <a class="btn btn-ghost" href="https://www.facettieren.ch/mitgliedschaft-membership/" target="_blank" rel="noopener">
+              <span data-l="de">Mitglied werden</span><span data-l="en">Become a member</span>
+            </a>
+          </div>
+        </div>
+
+        <aside id="kaffee" class="card coffee" aria-labelledby="coffee-title">
+          <svg class="cup" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 18h26v10a12 12 0 0 1-12 12h-2A12 12 0 0 1 8 28V18z"/>
+            <path d="M34 21h3a5 5 0 0 1 0 10h-3.5"/>
+            <path d="M16 6c-2 2 2 4 0 7M23 6c-2 2 2 4 0 7M30 6c-2 2 2 4 0 7"/>
+          </svg>
+          <h3 id="coffee-title"><span data-l="de">Spendiere der Gilde einen Kaffee</span><span data-l="en">Buy the guild a coffee</span></h3>
+          <p data-l="de">RayCarve ist kostenlos. Wenn dir das Plugin hilft, freut sich die Facettierergilde Schweiz über einen Kaffee via PayPal.</p>
+          <p data-l="en">RayCarve is free. If the plugin helps you, the Facettierergilde Schweiz is happy about a coffee via PayPal.</p>
+          <a class="btn btn-paypal" target="_blank" rel="noopener"
+             href="https://www.paypal.com/donate/?business=info%40facettieren.ch&amp;no_recurring=1&amp;currency_code=CHF&amp;item_name=Kaffee%20f%C3%BCr%20die%20Facettierergilde%20Schweiz%20(RayCarve)">
+            ☕ <span data-l="de">Mit PayPal spendieren</span><span data-l="en">Donate with PayPal</span>
+          </a>
+          <div class="addr">
+            <span>info@facettieren.ch</span>
+            <button type="button" class="copy-btn" data-copy="info@facettieren.ch"><span data-l="de">Kopieren</span><span data-l="en">Copy</span></button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap row">
+    <div>© 2018–2026 Tobias Wüthrich · Facettierergilde Schweiz · GPL-3.0-or-later</div>
+    <nav aria-label="Footer">
+      <a href="manual/"><span data-l="de">Handbuch</span><span data-l="en">Manual</span></a>
+      <a href="#download">Download</a>
+      <a href="https://www.facettieren.ch" target="_blank" rel="noopener">facettieren.ch</a>
+      <a href="https://www.facettieren.ch/kontakt/" target="_blank" rel="noopener"><span data-l="de">Kontakt</span><span data-l="en">Contact</span></a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>
