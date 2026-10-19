@@ -1,7 +1,8 @@
 {
-  "latest": "1.16.0",
-  "blender_min": "4.5",
-  "versions": [
-    "1.16.0"
-  ]
+    "latest":  "1.17.0",
+    "blender_min":  "4.5",
+    "versions":  [
+                     "1.17.0",
+                     "1.16.0"
+                 ]
 }
