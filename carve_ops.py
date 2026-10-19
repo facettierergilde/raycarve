@@ -2,7 +2,7 @@ import bpy
 import math
 
 from .utils import ADDON_VERSION
-from .properties import setIndex
+from .properties import setIndex, copyCutTable, saveStoneSettings
 from .mesh_utils import meshHasNonManifold, cleanMesh, recalculateStoneAndMandrelNormals, ensureObjectMode
 
 
@@ -14,8 +14,12 @@ class FACET_OT_AddRow(bpy.types.Operator):
     bl_label = "Add Row"
     bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(cls, context):
+        return context.scene.concave_machine.stone_pointer is not None
+
     def execute(self, context):
-        context.scene.cut_table.add()
+        context.scene.concave_machine.stone_pointer.raycarve_cut_table.add()
         return {'FINISHED'}
 
 
@@ -27,13 +31,18 @@ class FACET_OT_RemoveRow(bpy.types.Operator):
     bl_label = "Remove Row"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def execute(self, context):
-        scene = context.scene
-        index = scene.cut_table_index
+    @classmethod
+    def poll(cls, context):
+        return context.scene.concave_machine.stone_pointer is not None
 
-        if len(scene.cut_table) > 0:
-            scene.cut_table.remove(index)
-            scene.cut_table_index = min(max(0, index - 1), len(scene.cut_table) - 1)
+    def execute(self, context):
+        stone = context.scene.concave_machine.stone_pointer
+        table = stone.raycarve_cut_table
+        index = stone.raycarve_cut_table_index
+
+        if len(table) > 0:
+            table.remove(index)
+            stone.raycarve_cut_table_index = min(max(0, index - 1), len(table) - 1)
 
         return {'FINISHED'}
 
@@ -67,9 +76,16 @@ class FACET_OT_RedoCutting(bpy.types.Operator):
         # one not linked to this scene, which breaks later mode switches.
         target_collections = [c for c in old_stone.users_collection
                               if c.name not in (BACKUP_COLLECTION, LEGACY_BACKUP_COLLECTION)] or [scene.collection]
-        bpy.data.objects.remove(old_stone, do_unlink=True)
         obj_copy = bak_obj.copy()
         obj_copy.data = bak_obj.data.copy()
+        # The backup holds an outdated cut table and settings: take both over
+        # from the stone that is about to be replaced.
+        obj_copy.raycarve_cut_table.clear()
+        copyCutTable(old_stone.raycarve_cut_table, obj_copy.raycarve_cut_table)
+        obj_copy.raycarve_cut_table_index = old_stone.raycarve_cut_table_index
+        saveStoneSettings(scene.concave_machine, obj_copy)
+        obj_copy.raycarve_settings.is_stone = True
+        bpy.data.objects.remove(old_stone, do_unlink=True)
         obj_copy.name = object_name
         for coll in target_collections:
             coll.objects.link(obj_copy)
@@ -82,7 +98,7 @@ class FACET_OT_RedoCutting(bpy.types.Operator):
         obj_copy.select_set(True)
         scene.concave_machine.stone_pointer = obj_copy
 
-        for cutRow in scene.cut_table:
+        for cutRow in obj_copy.raycarve_cut_table:
             if cutRow.disable:
                 continue
             if cutRow.side == 'P':
@@ -191,8 +207,10 @@ def clearLog():
 
 
 def clearCutTable():
-    bpy.context.scene.cut_table.clear()
-    bpy.context.scene.cut_table_index = 0
+    stone = bpy.context.scene.concave_machine.stone_pointer
+    if stone is not None:
+        stone.raycarve_cut_table.clear()
+        stone.raycarve_cut_table_index = 0
     return {'FINISHED'}
 
 
@@ -345,6 +363,9 @@ def backupStone(scene):
     obj_copy = scene.concave_machine.stone_pointer.copy()
     obj_copy.data = scene.concave_machine.stone_pointer.data.copy()
     obj_copy.modifiers.clear()
+    # The backup is not a stone of its own: no cut table, never shown on switch.
+    obj_copy.raycarve_cut_table.clear()
+    obj_copy.raycarve_settings.is_stone = False
     obj_copy.name = object_name
     collection.objects.link(obj_copy)
     collection.hide_viewport = True
@@ -352,8 +373,7 @@ def backupStone(scene):
 
 
 def addCutTableRow(scene, isSingleIndex):
-    scene.cut_table.add()
-    cutRow = scene.cut_table[len(scene.cut_table) - 1]
+    cutRow = scene.concave_machine.stone_pointer.raycarve_cut_table.add()
 
     if scene.concave_machine.faceting_side == 'Side_Pavillion':
         cutRow.side = 'P'

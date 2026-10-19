@@ -216,11 +216,17 @@ class FACET_PT_ConcavePanel_CutTable(FACET_PT_ConcavePanel, bpy.types.Panel):
         layout = self.layout
         scene = context.scene
 
+        stone = scene.concave_machine.stone_pointer
+        if stone is None:
+            layout.label(text="Select a stone to see its cut table")
+            return
+        layout.label(text=f"Cuts of {stone.name}", icon='OBJECT_DATA')
+
         row = layout.row()
         row.template_list(
             "FACET_UL_Table", "",
-            scene, "cut_table",
-            scene, "cut_table_index",
+            stone, "raycarve_cut_table",
+            stone, "raycarve_cut_table_index",
             rows=5
         )
 

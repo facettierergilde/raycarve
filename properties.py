@@ -21,9 +21,95 @@ class CutTableRow(bpy.types.PropertyGroup):
     disable: bpy.props.BoolProperty(name="Disable", default=False)
 
 
+# Machine settings that are remembered per stone (Object.raycarve_settings)
+# and restored when switching stones.
+STONE_SETTINGS = ('stone_length', 'mandrel_pointer', 'index_gear', 'faceting_side', 'index',
+                  'facet_angle', 'stone_height', 'stone_position', 'mandrel_position',
+                  'mandrel_rotation', 'symmetry', 'mirror')
+
+
+class StoneSettings(bpy.types.PropertyGroup):
+    is_stone: bpy.props.BoolProperty(default=False)
+    saved: bpy.props.BoolProperty(default=False)
+    stone_length: bpy.props.FloatProperty(default=20.0)
+    mandrel_pointer: bpy.props.PointerProperty(type=bpy.types.Object)
+    index_gear: bpy.props.IntProperty(default=96)
+    faceting_side: bpy.props.StringProperty(default='Side_Pavillion')
+    index: bpy.props.IntProperty()
+    facet_angle: bpy.props.FloatProperty()
+    stone_height: bpy.props.FloatProperty()
+    stone_position: bpy.props.FloatProperty()
+    mandrel_position: bpy.props.FloatProperty()
+    mandrel_rotation: bpy.props.FloatProperty()
+    symmetry: bpy.props.IntProperty(default=1)
+    mirror: bpy.props.IntProperty()
+
+
+# While settings are restored, the update callbacks must not move, rescale or
+# re-cut anything.
+_restoring = False
+
+
+def copyCutTable(src, dst):
+    """Append all rows of the cut table collection src to dst."""
+    for row in src:
+        new_row = dst.add()
+        for key, prop in row.bl_rna.properties.items():
+            if key != 'rna_type' and not prop.is_readonly:
+                setattr(new_row, key, getattr(row, key))
+
+
+def saveStoneSettings(cm, stone):
+    settings = stone.raycarve_settings
+    for key in STONE_SETTINGS:
+        setattr(settings, key, getattr(cm, key))
+    settings.saved = True
+
+
+def restoreStoneSettings(context, stone):
+    global _restoring
+    cm = context.scene.concave_machine
+    _restoring = True
+    try:
+        for key in STONE_SETTINGS:
+            setattr(cm, key, getattr(stone.raycarve_settings, key))
+    finally:
+        _restoring = False
+    recalculateBatchIndices(None, context)
+    if cm.mandrel_pointer is not None:
+        setStoneAngles(None, context)
+
+
+def showOnlyStone(context, stone):
+    """Hide all other RayCarve stones so only the active one is visible."""
+    for obj in context.view_layer.objects:
+        if obj.raycarve_settings.is_stone:
+            try:
+                obj.hide_set(obj != stone)
+            except RuntimeError:
+                pass
+
+
+def onStoneChanged(self, context):
+    """Switching stones: remember the old stone's settings, restore the new one's."""
+    cm = context.scene.concave_machine
+    stone = cm.stone_pointer
+    if stone == cm.active_stone:
+        return
+    if cm.active_stone is not None:
+        saveStoneSettings(cm, cm.active_stone)
+    cm.active_stone = stone
+    if stone is None:
+        return
+    stone.raycarve_settings.is_stone = True
+    if stone.raycarve_settings.saved:
+        restoreStoneSettings(context, stone)
+    showOnlyStone(context, stone)
+
+
 def setStoneLength(self, context):
     scene = context.scene
-    if scene.concave_machine.stone_pointer is None:
+    if _restoring or scene.concave_machine.stone_pointer is None:
         return
     factor = scene.concave_machine.stone_length / scene.concave_machine.stone_pointer.dimensions[1]
     bpy.ops.transform.resize(value=(factor, factor, factor), orient_type='GLOBAL')
@@ -32,6 +118,8 @@ def setStoneLength(self, context):
 
 
 def setIndex(self, context):
+    if _restoring:
+        return
     scene = context.scene
     if(scene.concave_machine.index > scene.concave_machine.index_gear):
         scene.concave_machine.index = scene.concave_machine.index % scene.concave_machine.index_gear;
@@ -40,6 +128,8 @@ def setIndex(self, context):
 
 
 def setFacetAngle(self, context):
+    if _restoring:
+        return
     setStoneAngles(self, context)
 
 
@@ -93,6 +183,8 @@ def getBatchIndicesString(indicesArray, gears):
 
 
 def recalculateBatchIndices(self, context):
+    if _restoring:
+        return
     scene = context.scene
     res_indices = []
     index = scene.concave_machine.index
@@ -115,7 +207,9 @@ class ConcaveMachineAddonProperties(bpy.types.PropertyGroup):
     v_mandrel_width: bpy.props.FloatProperty(name="V-Mandrel Width", default=6.3, subtype="DISTANCE", precision=4)
     v_mandrel_bevel_offset: bpy.props.FloatProperty(name="V-Mandrel Bevel Offset", default=0.02, min=0.001, max=1.0, subtype="DISTANCE", precision=4)
     v_mandrel_bevel_segments: bpy.props.IntProperty(name="V-Mandrel Bevel Segments", default=6, min=1)
-    stone_pointer: bpy.props.PointerProperty(name="Stone", type=bpy.types.Object)
+    stone_pointer: bpy.props.PointerProperty(name="Stone", type=bpy.types.Object, update=onStoneChanged)
+    # The stone whose settings are currently loaded (to detect stone switches)
+    active_stone: bpy.props.PointerProperty(type=bpy.types.Object)
     stone_height: bpy.props.FloatProperty(name="Stone height", subtype="DISTANCE", update=setIndex, precision=4)
     stone_position: bpy.props.FloatProperty(name="Stone position", subtype="DISTANCE", update=setIndex, precision=4)
     mandrel_pointer: bpy.props.PointerProperty(name="Mandrel", type=bpy.types.Object)

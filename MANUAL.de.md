@@ -42,7 +42,7 @@ RayCarve simuliert das Facettieren, indem ein 3D-Steinmodell mit einem Walzenmod
   - das Einheitensystem von Blender auf Metrisch / Millimeter gestellt;
   - das Modell um 90° um die Z-Achse gedreht und die Drehung übernommen;
   - der Stein auf den Wert **Resize stone to length** (siehe unten) skaliert;
-  - ein bestehendes Schleifprotokoll und die Schleiftabelle geleert.
+  - der neue Stein mit leerem Schleifprotokoll und leerer Schleiftabelle angelegt (andere Steine in der Datei behalten ihre).
 - **Resize stone to length** — Ziel-Länge (entlang Y), auf die der Stein beim Import oder bei jeder Änderung dieses Werts skaliert wird.
 - **Dimensions** — zeigt Breite, Länge und Höhe des aktuellen Steins an (nur Anzeige).
 
@@ -62,7 +62,17 @@ RayCarve simuliert das Facettieren, indem ein 3D-Steinmodell mit einem Walzenmod
 
 ### 2.3 „3. Concave Machine Setup"
 
-- **Stone** / **Mandrel** — Objektauswahl, um festzulegen, welche Objekte der Szene als Stein und als Walze dienen — falls du ein anderes Mesh verwenden willst als das automatisch zugewiesene.
+- **Stone** / **Mandrel** — Objektauswahl, um festzulegen, welche Objekte der Szene als Stein und als Walze dienen — falls du ein anderes Mesh verwenden willst als das automatisch zugewiesene. Wird hier ein anderer Stein gewählt, wechselt RayCarve zu diesem Stein (siehe *Mit mehreren Steinen arbeiten*).
+
+#### Mit mehreren Steinen arbeiten
+
+Eine `.blend`-Datei kann mehrere Steine enthalten. Jeder Stein hat seine eigene **Schleiftabelle**, sein eigenes Schleifprotokoll (`<Stein>_concaveLog.txt`), seine importierte GCS-/STL-Datei und seine eigenen Maschineneinstellungen (Indexrad, Seite, Index, Facettenwinkel, Steinhöhe/-position, Walze und Walzenposition/-drehung, Symmetrie, Spiegelung, Steinlänge). Wählst du im Feld **Stone** einen anderen Stein:
+
+- werden die Einstellungen des bisherigen Steins gemerkt und die des neu gewählten wiederhergestellt;
+- zeigt das Panel Cut Table die Schnitte des neuen Steins;
+- werden alle anderen Steine ausgeblendet, sodass nur der aktive sichtbar ist.
+
+Ein weiterer importierter Stein wird ebenso zur Datei hinzugefügt; du kannst jederzeit zu früheren Steinen zurückwechseln. Dateien aus Versionen vor 1.18.0 werden beim Öffnen automatisch umgestellt: Ihre Schleiftabelle wird dem ausgewählten Stein zugeordnet.
 - **Index gear** — Anzahl Indexpositionen am Teilkopf der Maschine (z. B. 96). Alle Indexwerte werden modulo dieser Zahl gerechnet.
 
 ### 2.4 „4. Carve"
@@ -97,7 +107,7 @@ Um mehrere Indexpositionen eines symmetrischen Musters in einem Schritt zu schle
 
 ### 2.6 „Cut Table"
 
-Eine gespeicherte, editierbare Tabelle aller Schnitte am aktuellen Stein — eine Zeile pro **Apply** (Einzelschnitt) oder **Carve all** (Reihe). Spalten:
+Eine gespeicherte, editierbare Tabelle aller Schnitte am aktuellen Stein (jeder Stein hat seine eigene Tabelle, die mit ihm gespeichert wird) — eine Zeile pro **Apply** (Einzelschnitt) oder **Carve all** (Reihe). Spalten:
 
 | Spalte | Bedeutung |
 |---|---|

@@ -42,7 +42,7 @@ RayCarve simulates faceting by cutting a 3D stone mesh with a "mandrel" mesh (th
   - Sets Blender's unit system to Metric / millimeters.
   - Rotates the imported mesh 90° around Z and applies the rotation.
   - Resizes the stone to the **Resize stone to length** value (below).
-  - Clears any previous cut log and cut table.
+  - Starts the new stone with an empty cut log and cut table (other stones in the file keep theirs).
 - **Resize stone to length** — target length (along Y) the stone is scaled to on import or whenever this value changes.
 - **Dimensions** — read-only display of the current stone's width/length/height once one is set.
 
@@ -62,7 +62,17 @@ RayCarve simulates faceting by cutting a 3D stone mesh with a "mandrel" mesh (th
 
 ### 2.3 "3. Concave Machine Setup"
 
-- **Stone** / **Mandrel** — object pickers to (re)select which scene objects act as the stone and the mandrel, in case you want to point to a different mesh than the one auto-assigned.
+- **Stone** / **Mandrel** — object pickers to (re)select which scene objects act as the stone and the mandrel, in case you want to point to a different mesh than the one auto-assigned. Picking another stone here switches to it (see *Working with several stones* below).
+
+#### Working with several stones
+
+A single `.blend` file can hold several stones. Each stone keeps its own **cut table**, its own cut log (`<stone>_concaveLog.txt`), its imported GCS/STL file and its machine settings (index gear, faceting side, index, facet angle, stone height/position, mandrel and mandrel position/rotation, symmetry, mirror, stone length). When you choose another stone in the **Stone** field:
+
+- the settings of the previous stone are remembered and those of the newly selected stone are restored;
+- the Cut Table panel shows the new stone's cuts;
+- all other stones are hidden, so only the active one is visible.
+
+Importing a further stone adds it to the file the same way, so you can switch back to earlier stones at any time. Files from versions before 1.18.0 are converted automatically on opening: their cut table is moved onto the stone that was selected.
 - **Index gear** — the number of index positions on the machine's dop/index head (e.g., 96). All facet "index" values are taken modulo this number.
 
 ### 2.4 "4. Carve"
@@ -96,7 +106,7 @@ For cutting several index positions in one symmetric pattern in a single action:
 
 ### 2.6 "Cut Table"
 
-A persistent, editable spreadsheet-like log of every cut/batch performed on the current stone, with one row per **Apply** (single) or **Carve all** (batch) action. Columns:
+A persistent, editable spreadsheet-like log of every cut/batch performed on the current stone (each stone has its own table, saved with the stone), with one row per **Apply** (single) or **Carve all** (batch) action. Columns:
 
 | Column | Meaning |
 |---|---|

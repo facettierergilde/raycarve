@@ -10,7 +10,7 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 from .properties import setStoneLength
-from .carve_ops import clearLog, clearCutTable
+from .carve_ops import clearLog
 
 
 def set_blender_to_mm():
@@ -94,7 +94,6 @@ class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
     )
 
     def execute(self, context):
-        clearCutTable()
         set_blender_to_mm()
         if "Cube" in bpy.data.objects:
             bpy.data.objects["Cube"].select_set(True)
@@ -131,7 +130,6 @@ class ImportGCSFileOperator(Operator, ImportHelper):
     filter_glob: StringProperty(default="*.gcs", options={'HIDDEN'})
 
     def execute(self, context):
-        clearCutTable()
         set_blender_to_mm()
         if "Cube" in bpy.data.objects:
             bpy.data.objects["Cube"].select_set(True)

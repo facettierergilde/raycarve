@@ -3,7 +3,7 @@ schema_version = "1.0.0"
 # Example of manifest file for a Blender extension
 # Change the values according to your extension
 id = "RayCarve"
-version = "1.17.0"
+version = "1.18.0"
 name = "RayCarve"
 tagline = "A concave faceting machine for Blender"
 maintainer = "Tobias Wüthrich"
