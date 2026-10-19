@@ -1,6 +1,6 @@
 # RayCarve — Benutzerhandbuch
 
-**RayCarve** ist eine Blender-Erweiterung zum Simulieren und Planen von Edelsteinschliffen auf einer Konkav-Facettiermaschine. Du kannst damit einen Stein importieren, Walzen (Schleifwerkzeuge) erzeugen, Facetten mit Boolean-Operationen schleifen, jeden Schnitt protokollieren und den Stein optional live an einen externen Web-Viewer senden.
+**RayCarve** ist eine Blender-Erweiterung zum Simulieren und Planen von Edelsteinschliffen auf einer Konkav-Facettiermaschine. Du kannst damit einen Stein importieren, Walzen (Schleifwerkzeuge) erzeugen, Facetten mit Boolean-Operationen schleifen, jeden Schnitt protokollieren und den Stein optional live an den Begleit-Renderer **RayView** (Concave Ray Vision) senden, der ihn in Echtzeit raytracet.
 
 Version: 1.16.0 — Autor: Tobias Wüthrich
 
@@ -28,7 +28,7 @@ RayCarve simuliert das Facettieren, indem ein 3D-Steinmodell mit einem Walzenmod
 3. Stein und Walze über Winkel, Höhe und Position ausrichten — genau wie mit den Einstellungen an einer echten Facettiermaschine.
 4. Facette schleifen (Boolean übernehmen) und für jede Indexposition rund um den Stein wiederholen.
 5. Jeder Schnitt wird als Zeile in der **Cut Table** (Schleiftabelle) gespeichert. So entsteht ein vollständiges Schleifprotokoll, das du als Textdatei speichern kannst (z. B. für die Arbeit an der Maschine).
-6. Optional wird die aktuelle Steinform während der Arbeit live an einen lokalen Webserver (z. B. einen WebGL-Viewer) übertragen.
+6. Optional wird die aktuelle Steinform während der Arbeit live an RayView übertragen (siehe [Abschnitt 5](#5-live-rendering-mit-rayview)).
 
 ---
 
@@ -138,7 +138,7 @@ Zum Beheben von Mesh-Problemen, die nach vielen Boolean-Operationen auftreten k�
 - **Synchronisation Status** — zeigt `Ok`, eine Fortschrittsmeldung oder einen Fehler, falls der letzte Upload fehlgeschlagen ist (bei einem Fehler schaltet sich die automatische Synchronisation ab).
 - **Manual sync to web** — erzwingt sofort einen Export und Upload, auch wenn sich nichts geändert hat.
 
-Technisch exportiert die Erweiterung den sichtbaren Stein (mit angewendeten Modifiern) als binäre STL in eine temporäre Datei und sendet sie per `POST` als Multipart-Formular an `http://localhost:3000/upload` — zusammen mit Objektname, Drehung (Euler X/Y/Z und als Tupel) und Position. Dafür muss ein lokaler Server auf Port 3000 laufen, der dieses Upload-Format annimmt; RayCarve selbst stellt diesen Server nicht bereit. Schlägt die Anfrage fehl (z. B. weil kein Server läuft), zeigt das Statusfeld einen Fehler und die automatische Synchronisation schaltet sich ab.
+Technisch exportiert die Erweiterung den sichtbaren Stein (mit angewendeten Modifiern) als binäre STL in eine temporäre Datei und sendet sie per `POST` als Multipart-Formular an `http://localhost:3000/upload` — zusammen mit Objektname, Drehung (Euler X/Y/Z und als Tupel) und Position. Dafür muss ein lokaler Server auf Port 3000 laufen, der dieses Upload-Format annimmt; RayCarve selbst stellt diesen Server nicht bereit; das übernimmt **RayView** (siehe [Abschnitt 5](#5-live-rendering-mit-rayview)). Schlägt die Anfrage fehl (z. B. weil kein Server läuft), zeigt das Statusfeld einen Fehler und die automatische Synchronisation schaltet sich ab.
 
 ---
 
@@ -151,7 +151,7 @@ Technisch exportiert die Erweiterung den sichtbaren Stein (mit angewendeten Modi
    - Für Facetten, die sich rund um den Stein wiederholen (z. B. 8 Hauptfacetten), mit **Carve Row** und Symmetry/Mirror alle in einem **Carve all** schleifen.
 5. Die **Cut Table** füllt sich dabei — sie ist dein Hauptprotokoll. Zeilen deaktivieren oder wieder aktivieren und mit **Redo cutting** das Ergebnis neu berechnen, wenn du frühere Werte änderst.
 6. **Save instructions →** das Schleifprotokoll als Text für die Maschine exportieren.
-7. (Optional) **Render synchronisation** aktivieren, wenn ein lokaler Viewer-Server läuft, um den Fortschritt live mitzuverfolgen.
+7. (Optional) **Render synchronisation** aktivieren, während RayView läuft, um den Fortschritt live als geraytracten Edelstein zu sehen.
 
 ---
 
@@ -162,3 +162,39 @@ Technisch exportiert die Erweiterung den sichtbaren Stein (mit angewendeten Modi
 - Der Sicherungsstein (`<stein>_bak` in der ausgeblendeten Collection `rayCarveBackup`) wird beim ersten Apply bzw. Carve all automatisch angelegt. **Redo cutting** stellt den Stein daraus wieder her — nicht löschen, wenn du die Schnitte später neu abspielen möchtest.
 - Alle Einheiten sind Millimeter und Grad; beim Import eines Steins wird die Szene automatisch auf Metrisch/mm umgestellt.
 - Der Boolean-Modifier verwendet den „Manifold"-Solver — ist Stein oder Walze nicht mannigfaltig (non-manifold), können Schnitte fehlschlagen oder falsch aussehen. Prüfe die Geometrie in diesem Fall mit den Mesh-Analyse-Werkzeugen von Blender.
+
+---
+
+## 5. Live-Rendering mit RayView
+
+**RayView** (Concave Ray Vision) ist der Begleit-Renderer zu RayCarve und wird ebenfalls von der Facettierergilde Schweiz entwickelt. Er verfolgt das Licht in Echtzeit durch den Stein — mit mehrfachen inneren Reflexionen, Brechungsindex (IOR), Dispersion und Fresnel-Reflexion — vor HDRI- oder Skybox-Umgebungen. Zusammen mit der **Render synchronisation** von RayCarve siehst du nach jedem Schnitt, wie der Stein tatsächlich funkeln wird.
+
+Quellcode und Releases: <https://github.com/facettierergilde/rayview>
+
+### 5.1 Download & Installation (Windows)
+
+1. Die neueste Version öffnen: <https://github.com/facettierergilde/rayview/releases/latest>
+2. Unter **Assets** die Datei `ConcaveRayVision-v<version>-win-x64.zip` herunterladen (aktuell: [v1.0.0](https://github.com/facettierergilde/rayview/releases/download/v1.0.0/ConcaveRayVision-v1.0.0-win-x64.zip)).
+3. In einen beliebigen Ordner entpacken (z. B. `C:\Programme\ConcaveRayVision`).
+4. `concaverayvision.exe` starten. Der Sync-Server für RayCarve startet automatisch mit.
+
+Beim ersten Start kann Windows eine SmartScreen-Warnung anzeigen, da die App nicht signiert ist: **Weitere Informationen → Trotzdem ausführen** wählen. Fragt die Windows-Firewall nach, den Zugriff für private Netzwerke erlauben (die App lauscht nur lokal auf den Ports 3000 und 3001).
+
+Unter macOS/Linux oder für die neueste Entwicklungsversion lässt sich RayView mit [Node.js](https://nodejs.org) 22+ aus dem Quellcode starten: Repository klonen, `npm install`, dann `npm run dev` (Viewer unter <http://localhost:5173>) und in einem zweiten Terminal `npm run server` (Sync-Server). Details im README von RayView.
+
+### 5.2 RayView zusammen mit RayCarve verwenden
+
+1. Zuerst **RayView** starten.
+2. In Blender wie gewohnt einen Stein in RayCarve importieren.
+3. Das Panel **Render synchronisation** (Abschnitt 2.9) öffnen und auf **Manual sync to web** klicken. Der Status zeigt `Ok`, und der Stein erscheint in RayView.
+4. **Auto. sync. enabled** aktivieren. Ab jetzt wird jede Änderung (Vorschau-Schnitt, übernommener Schnitt, geänderter Winkel/Index) automatisch an RayView gesendet.
+5. In RayView das Aussehen anpassen: Brechungsindex und Farbe des Steins, Anzahl Reflexionen, Dispersion, Umgebung (HDRI/Skybox), Belichtung, Kamera-Voreinstellungen und Drehteller-Animation.
+
+Funktionsweise: RayCarve exportiert den Stein als STL und sendet ihn an `http://localhost:3000/upload`; der Sync-Server von RayView empfängt ihn und leitet ihn per WebSocket (Port 3001) an den Viewer weiter, der das Modell sofort neu lädt.
+
+### 5.3 Fehlerbehebung
+
+- **Status zeigt „Syncronisation failed and therefore disabled!"** — RayView lief nicht (oder noch nicht), als RayCarve senden wollte. RayView starten, dann **Manual sync to web** klicken und die automatische Synchronisation wieder aktivieren.
+- **In RayView ändert sich nichts** — prüfen, dass kein anderes Programm die Ports 3000/3001 belegt und die Firewall die App zulässt.
+- **Stein sieht falsch aus (dunkel/umgedreht)** — im Troubleshoot-Panel von RayCarve **Fix Boolean** bzw. **Fix Mesh** ausführen und erneut synchronisieren.
+- RayView lässt sich auch eigenständig nutzen: Es lädt GLB-, GLTF-, STL- und OBJ-Modelle direkt.

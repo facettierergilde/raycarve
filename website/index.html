@@ -33,6 +33,7 @@
     <nav class="nav-links" aria-label="Main">
       <a href="#features"><span data-l="de">Funktionen</span><span data-l="en">Features</span></a>
       <a href="#download">Download</a>
+      <a href="#rayview">RayView</a>
       <a href="manual/"><span data-l="de">Handbuch</span><span data-l="en">Manual</span></a>
       <a href="#gilde"><span data-l="de">Gilde</span><span data-l="en">Guild</span></a>
       <a href="#kaffee"><span data-l="de">Kaffee spendieren</span><span data-l="en">Buy a coffee</span></a>
@@ -215,8 +216,56 @@
     </div>
   </section>
 
+  <!-- ============ RAYVIEW ============ -->
+  <section id="rayview" class="alt" aria-labelledby="rayview-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker"><span data-l="de">Live-Rendering</span><span data-l="en">Live rendering</span></div>
+        <h2 id="rayview-title"><span data-l="de">RayView – sieh deinen Stein funkeln</span><span data-l="en">RayView – watch your stone sparkle</span></h2>
+        <p data-l="de">RayView (Concave Ray Vision) ist der Begleit-Renderer zu RayCarve. Er verfolgt das Licht in Echtzeit durch den Stein – mit inneren Reflexionen, Brechungsindex, Dispersion und Fresnel – und zeigt nach jedem Schnitt in Blender sofort das neue Ergebnis.</p>
+        <p data-l="en">RayView (Concave Ray Vision) is RayCarve's companion renderer. It ray-traces light through the stone in real time – internal bounces, refractive index, dispersion and Fresnel – and updates instantly after every cut in Blender.</p>
+      </div>
+      <div class="download-grid">
+        <div class="card dl-card">
+          <div class="kicker" style="font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">
+            <span data-l="de">Neueste Version</span><span data-l="en">Latest release</span>
+          </div>
+          <div class="version">RayView</div>
+          <div class="sub"><span data-l="de">Windows-App (.zip, x64)</span><span data-l="en">Windows app (.zip, x64)</span></div>
+          <a class="btn btn-primary" href="https://github.com/facettierergilde/rayview/releases/latest" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span data-l="de">Neueste Version auf GitHub</span><span data-l="en">Latest release on GitHub</span>
+          </a>
+          <ul class="facts">
+            <li><span data-l="de">Datei</span><span data-l="en">File</span><span>ConcaveRayVision-v…-win-x64.zip</span></li>
+            <li><span data-l="de">System</span><span data-l="en">System</span><span><span data-l="de">Windows x64 · andere via Node.js</span><span data-l="en">Windows x64 · others via Node.js</span></span></li>
+            <li><span data-l="de">Lizenz</span><span data-l="en">License</span><span>GPL-3.0</span></li>
+            <li><span data-l="de">Quellcode</span><span data-l="en">Source</span><span><a href="https://github.com/facettierergilde/rayview" target="_blank" rel="noopener">GitHub ↗</a></span></li>
+          </ul>
+        </div>
+        <div class="card dl-card install">
+          <h3><span data-l="de">Mit RayCarve verwenden</span><span data-l="en">Use with RayCarve</span></h3>
+          <ol data-l="de">
+            <li>ZIP aus <strong>Assets</strong> herunterladen, entpacken und <strong>concaverayvision.exe</strong> starten – der Sync-Server läuft automatisch mit.</li>
+            <li>In Blender einen Stein in RayCarve importieren.</li>
+            <li>Im Panel <strong>Render synchronisation</strong> auf <strong>Manual sync to web</strong> klicken – der Stein erscheint in RayView.</li>
+            <li><strong>Auto. sync. enabled</strong> einschalten: Jeder Schnitt wird nun live übertragen.</li>
+          </ol>
+          <ol data-l="en">
+            <li>Download the ZIP from <strong>Assets</strong>, unzip it and start <strong>concaverayvision.exe</strong> – the sync server starts with it.</li>
+            <li>Import a stone in RayCarve in Blender.</li>
+            <li>In the <strong>Render synchronisation</strong> panel click <strong>Manual sync to web</strong> – the stone appears in RayView.</li>
+            <li>Turn on <strong>Auto. sync. enabled</strong>: every cut is now streamed live.</li>
+          </ol>
+          <p class="older" data-l="de">Windows-SmartScreen-Warnung? <strong>Weitere Informationen → Trotzdem ausführen</strong>. Details im <a href="manual/">Handbuch, Abschnitt 5</a>.</p>
+          <p class="older" data-l="en">SmartScreen warning? <strong>More info → Run anyway</strong>. Details in the <a href="manual/">manual, section 5</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ GUILD + COFFEE ============ -->
-  <section id="gilde" class="alt" aria-labelledby="guild-title">
+  <section id="gilde" aria-labelledby="guild-title">
     <div class="wrap">
       <div class="section-head">
         <div class="kicker"><span data-l="de">Die Gilde</span><span data-l="en">The guild</span></div>

@@ -1,6 +1,6 @@
 # RayCarve — User Manual
 
-**RayCarve** is a Blender add-on for simulating and planning gemstone faceting on a concave/cabbing faceting machine. It lets you import a stone, create mandrels (cutting wheels), carve facets using boolean operations, log every cut, and optionally sync the in-progress stone to an external web viewer.
+**RayCarve** is a Blender add-on for simulating and planning gemstone faceting on a concave/cabbing faceting machine. It lets you import a stone, create mandrels (cutting wheels), carve facets using boolean operations, log every cut, and optionally sync the in-progress stone to the companion renderer **RayView** (Concave Ray Vision) for a live, ray-traced preview.
 
 Version: 1.16.0 — Author: Tobias Wüthrich
 
@@ -28,7 +28,7 @@ RayCarve simulates faceting by cutting a 3D stone mesh with a "mandrel" mesh (th
 3. Position the stone and mandrel using angle/height/position parameters that mirror a real faceting machine's controls.
 4. Carve a facet (apply the boolean), repeat for each facet index around the stone.
 5. Every carve is recorded as a row in the **Cut Table**, building up a full cutting log you can save to a text file (e.g., for use at the physical machine).
-6. Optionally, the current stone shape is synced live to a local web server (e.g., a WebGL viewer) as you work.
+6. Optionally, the current stone shape is synced live to RayView as you work (see [section 5](#5-live-rendering-with-rayview)).
 
 ---
 
@@ -136,7 +136,7 @@ Optionally streams the current stone mesh to an external renderer/viewer over HT
 - **Synchronisation Status** — shows `Ok`, an in-progress message, or an error if the last upload failed (auto-sync disables itself on failure).
 - **Manual sync to web** — forces an immediate export+upload regardless of whether anything changed.
 
-Mechanically: the addon exports the visible stone (with modifiers applied) as a binary STL to a temporary file, then `POST`s it as multipart form data to `http://localhost:3000/upload` along with the object's name, rotation (Euler X/Y/Z and tuple), and position. This requires a local server listening on port 3000 that accepts this upload format — RayCarve itself does not provide that server. If the request fails (e.g., no server running), the status field shows an error and auto-sync turns itself off.
+Mechanically: the addon exports the visible stone (with modifiers applied) as a binary STL to a temporary file, then `POST`s it as multipart form data to `http://localhost:3000/upload` along with the object's name, rotation (Euler X/Y/Z and tuple), and position. This requires a local server listening on port 3000 that accepts this upload format — RayCarve itself does not provide that server; it is provided by **RayView** (see [section 5](#5-live-rendering-with-rayview)). If the request fails (e.g., no server running), the status field shows an error and auto-sync turns itself off.
 
 ---
 
@@ -149,7 +149,7 @@ Mechanically: the addon exports the visible stone (with modifiers applied) as a 
    - For facets that repeat around the stone (e.g., 8 mains), use **Carve Row** with Symmetry/Mirror to cut them all in one **Carve all**.
 5. Watch the **Cut Table** fill up — this is your master record. Disable/re-enable rows and use **Redo cutting** to regenerate the result if you change earlier parameters.
 6. **Save instructions →** export the plain-text cut log to take to the machine.
-7. (Optional) Enable **Render synchronisation** if you have a local viewer server running, to mirror your progress live.
+7. (Optional) Enable **Render synchronisation** with RayView running, to see your progress live as a ray-traced gemstone.
 
 ---
 
@@ -160,3 +160,39 @@ Mechanically: the addon exports the visible stone (with modifiers applied) as a 
 - The "backup" stone (`<stone>_bak` in the hidden `rayCarveBackup` collection) is created automatically on your first Apply/Carve-all and is what **Redo cutting** restores from — don't delete it if you want to keep replay capability.
 - All units are millimeters/degrees; importing a stone automatically switches the scene to Metric/mm.
 - The Boolean modifier uses the "Manifold" solver — if you have a non-manifold mandrel or stone, cuts may fail or look wrong; check geometry with Blender's mesh analysis tools if so.
+
+---
+
+## 5. Live rendering with RayView
+
+**RayView** (Concave Ray Vision) is the companion renderer to RayCarve, also developed by the Facettierer Gilde Schweiz. It ray-traces light through the stone in real time — multiple internal bounces, refractive index (IOR), dispersion and Fresnel reflections — against HDRI or skybox environments. Together with RayCarve's **Render synchronisation** it shows how the stone you're cutting will actually sparkle, updated after every cut.
+
+Source code and releases: <https://github.com/facettierergilde/rayview>
+
+### 5.1 Download & installation (Windows)
+
+1. Open the latest release: <https://github.com/facettierergilde/rayview/releases/latest>
+2. Under **Assets**, download `ConcaveRayVision-v<version>-win-x64.zip` (at the time of writing: [v1.0.0](https://github.com/facettierergilde/rayview/releases/download/v1.0.0/ConcaveRayVision-v1.0.0-win-x64.zip)).
+3. Unzip it into a folder of your choice (e.g. `C:\Programs\ConcaveRayVision`).
+4. Start `concaverayvision.exe`. The sync server for RayCarve starts automatically with the app.
+
+Windows may show a SmartScreen warning the first time, because the app is not code-signed: click **More info → Run anyway**. If the Windows firewall asks, allow access for private networks (the app only listens locally on ports 3000 and 3001).
+
+On macOS/Linux, or to run the latest development version, RayView can be started from source with [Node.js](https://nodejs.org) 22+: clone the repository, run `npm install`, then `npm run dev` (viewer at <http://localhost:5173>) and, in a second terminal, `npm run server` (sync server). See the RayView README for details.
+
+### 5.2 Using RayView with RayCarve
+
+1. Start **RayView** first.
+2. In Blender, import a stone in RayCarve as usual.
+3. Open the **Render synchronisation** panel (section 2.9) and click **Manual sync to web**. The status should read `Ok` and the stone appears in RayView.
+4. Enable **Auto. sync. enabled**. From now on every change (preview carve, applied cut, changed angle/index) is sent to RayView automatically.
+5. In RayView, adjust the look: refractive index and colour of the gem material, number of bounces, dispersion, environment (HDRI/skybox), exposure, camera presets and turntable animation.
+
+How it works: RayCarve exports the stone as STL and posts it to `http://localhost:3000/upload`; RayView's sync server receives it and pushes it over a WebSocket (port 3001) to the viewer, which reloads the model immediately.
+
+### 5.3 Troubleshooting
+
+- **Status shows "Syncronisation failed and therefore disabled!"** — RayView was not running (or not yet started) when RayCarve tried to send. Start RayView, then click **Manual sync to web** and re-enable auto-sync.
+- **Nothing updates in RayView** — make sure no other program uses ports 3000/3001 and that the firewall allows the app.
+- **Stone looks wrong (dark/inverted)** — run **Fix Boolean** / **Fix Mesh** in RayCarve's Troubleshoot panel and sync again.
+- RayView can also be used on its own: it loads GLB, GLTF, STL and OBJ models directly.
