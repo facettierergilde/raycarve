@@ -48,6 +48,7 @@ classes = (
     carve_ops.CleanMesh,
     carve_ops.SaveCutLog,
     import_ops.ImportGCSFileOperator,
+    import_ops.Export_OT_source_file,
 )
 
 

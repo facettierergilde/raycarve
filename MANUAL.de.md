@@ -36,8 +36,8 @@ RayCarve simuliert das Facettieren, indem ein 3D-Steinmodell mit einem Walzenmod
 
 ### 2.1 „1. Stone import"
 
-- **Import GCS File** — importiert eine `.gcs`-XML-Datei mit einer Facettenbeschreibung (wie sie einige Facetten-Designprogramme exportieren). Die Originaldatei wird zusätzlich als Blender-Textblock abgelegt. Aus den Facetten wird ein Mesh aufgebaut, daraus eine **konvexe Hülle** berechnet und wie beim STL-Import gedreht und skaliert.
-- **Import STL file as Stone** — öffnet einen Dateidialog, um ein `.stl`-Modell als Stein zu importieren. Dabei wird automatisch:
+- **Import GCS File** — importiert eine `.gcs`-XML-Datei mit einer Facettenbeschreibung (wie sie einige Facetten-Designprogramme exportieren). Die Originaldatei wird zusätzlich als Blender-Textblock abgelegt, benannt wie die Datei inklusive Endung (z. B. `MeinStein.gcs`). Aus den Facetten wird ein Mesh aufgebaut, daraus eine **konvexe Hülle** berechnet und wie beim STL-Import gedreht und skaliert.
+- **Import STL file as Stone** — öffnet einen Dateidialog, um ein `.stl`-Modell als Stein zu importieren. Eine Kopie der Datei wird als Textblock mit dem Dateinamen abgelegt (z. B. `MeinStein.stl`); binäre STL-Dateien werden dabei als gleichwertige ASCII-STL gespeichert. Dabei wird automatisch:
   - der Standard-„Cube" gelöscht, falls vorhanden;
   - das Einheitensystem von Blender auf Metrisch / Millimeter gestellt;
   - das Modell um 90° um die Z-Achse gedreht und die Drehung übernommen;
@@ -119,9 +119,10 @@ Schaltflächen rechts neben der Liste:
 
 ### 2.7 „5. Save instructions"
 
-- **Save cut instructions** — öffnet den Speicherdialog des Blender-Texteditors, um den Textblock `concaveLog.txt` (das fortlaufende Schleifprotokoll als Text, unabhängig von der Cut Table) zu speichern — praktisch, um die Anleitung für die Arbeit an der Maschine auszudrucken.
+- **Save cut instructions** — öffnet den Speicherdialog des Blender-Texteditors, um den Textblock `<Steinname>_concaveLog.txt` des aktuellen Steins (das fortlaufende Schleifprotokoll als Text, unabhängig von der Cut Table) zu speichern — praktisch, um die Anleitung für die Arbeit an der Maschine auszudrucken.
+- **Export GCS file** / **Export STL file** — speichert die ursprüngliche GCS- bzw. STL-Datei, aus der der aktuelle Stein importiert wurde. Es erscheint nur der Knopf für den tatsächlich importierten Dateityp; wurde der Stein nicht aus einer Datei importiert (oder der Textblock gelöscht), erscheint keiner.
 
-Das Protokoll (`concaveLog.txt`, wird beim ersten Schnitt automatisch angelegt) enthält einen Kopf (Name und Masse von Stein und Walze, Indexrad) und danach pro Schnitt bzw. Reihe einen Block mit Seite, Index(en), Facettenwinkel, Steinhöhe, Stein- und Walzenposition sowie Walzendrehung — alles in gut lesbaren Einheiten und Grad.
+Das Protokoll (`<Steinname>_concaveLog.txt`, z. B. `Stone_concaveLog.txt`, wird beim ersten Schnitt automatisch angelegt) wird pro Stein geführt, sodass ein zweiter geladener Stein das Protokoll des ersten weder vermischt noch überschreibt. Es enthält einen Kopf (Name und Masse von Stein und Walze, Indexrad) und danach pro Schnitt bzw. Reihe einen Block mit Seite, Index(en), Facettenwinkel, Steinhöhe, Stein- und Walzenposition sowie Walzendrehung — alles in gut lesbaren Einheiten und Grad.
 
 ### 2.8 „Troubleshoot" (standardmässig eingeklappt)
 

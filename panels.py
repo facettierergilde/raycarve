@@ -1,6 +1,7 @@
 import bpy
 
 from .utils import ADDON_VERSION
+from .import_ops import sourceText
 
 
 # -------------------------------------------------------------------
@@ -239,6 +240,12 @@ class FACET_PT_ConcavePanel_SaveInstructions(FACET_PT_ConcavePanel, bpy.types.Pa
         scene = context.scene
         row = layout.row(align=True)
         row.operator("object.save_cut_log")
+        # Only offer exports for source files that were actually imported.
+        stone = scene.concave_machine.stone_pointer
+        for kind in ('GCS', 'STL'):
+            if sourceText(stone, kind) is not None:
+                op = layout.row(align=True).operator("object.export_source_file", text=f"Export {kind} file")
+                op.kind = kind
 
 
 class FACET_PT_ConcavePanel_Troubleshoot(FACET_PT_ConcavePanel, bpy.types.Panel):

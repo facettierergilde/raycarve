@@ -36,8 +36,8 @@ RayCarve simulates faceting by cutting a 3D stone mesh with a "mandrel" mesh (th
 
 ### 2.1 "1. Stone import"
 
-- **Import GCS File** — imports a `.gcs` XML facet-description file (as exported by some faceting design tools). The raw file is also stored as a Blender text block. The facet vertices/faces are parsed, a mesh is built, and a **convex hull** is computed and rotated/scaled the same way as STL import.
-- **Import STL file as Stone** — opens a file browser to import an `.stl` mesh as the stone. Automatically:
+- **Import GCS File** — imports a `.gcs` XML facet-description file (as exported by some faceting design tools). The original file is also stored as a Blender text block named like the file, including its extension (e.g. `MyStone.gcs`). The facet vertices/faces are parsed, a mesh is built, and a **convex hull** is computed and rotated/scaled the same way as STL import.
+- **Import STL file as Stone** — opens a file browser to import an `.stl` mesh as the stone. A copy of the file is stored as a text block named like the file (e.g. `MyStone.stl`); binary STL files are stored as equivalent ASCII STL. Automatically:
   - Deletes the default "Cube" if present.
   - Sets Blender's unit system to Metric / millimeters.
   - Rotates the imported mesh 90° around Z and applies the rotation.
@@ -117,9 +117,10 @@ Toolbar buttons (right of the list):
 
 ### 2.7 "5. Save instructions"
 
-- **Save cut instructions** — opens Blender's text editor save dialog to export the `concaveLog.txt` text block (the running plain-text cut log, distinct from the Cut Table) to disk — handy for printing instructions to follow at the physical machine.
+- **Save cut instructions** — opens Blender's text editor save dialog to export the `<stone name>_concaveLog.txt` text block of the current stone (the running plain-text cut log, distinct from the Cut Table) to disk — handy for printing instructions to follow at the physical machine.
+- **Export GCS file** / **Export STL file** — saves the original GCS or STL file the current stone was imported from. Only the button for the file type that was actually imported is shown; if the stone was not imported from a file (or the text block was deleted), neither appears.
 
-The log (`concaveLog.txt`, auto-created on first cut) contains a header (stone name & dimensions, mandrel name & dimensions, index gear) followed by one block per cut/batch with side, index(es), facet angle, stone height, stone/mandrel position, and mandrel rotation — all in human-readable units/degrees.
+The log (`<stone name>_concaveLog.txt`, e.g. `Stone_concaveLog.txt`, auto-created on first cut) is kept per stone, so loading a second stone never mixes up or overwrites the log of the first. It contains a header (stone name & dimensions, mandrel name & dimensions, index gear) followed by one block per cut/batch with side, index(es), facet angle, stone height, stone/mandrel position, and mandrel rotation — all in human-readable units/degrees.
 
 ### 2.8 "Troubleshoot" (collapsed by default)
 

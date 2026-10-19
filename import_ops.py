@@ -1,10 +1,12 @@
 import bpy
 import math
 
+import os
+import struct
 import xml.etree.ElementTree as ET
 
 from bpy_extras.io_utils import ImportHelper
-from bpy.props import StringProperty, BoolProperty
+from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 from .properties import setStoneLength
@@ -19,6 +21,57 @@ def set_blender_to_mm():
     scene.unit_settings.scale_length = 0.001
     bpy.context.space_data.overlay.grid_scale = 0.001
     bpy.context.space_data.lens = 80
+
+
+# Custom property on the stone object naming the text block that holds the
+# imported source file, per file type.
+SOURCE_PROPS = {'GCS': "raycarve_gcs_text", 'STL': "raycarve_stl_text"}
+
+
+def storeSourceText(name, content):
+    """Store an imported file in a text block called like the file (with extension)."""
+    text_block = bpy.data.texts.get(name)
+    if not text_block:
+        text_block = bpy.data.texts.new(name)
+    text_block.clear()
+    text_block.write(content)
+    return text_block
+
+
+def sourceText(stone, kind):
+    """Text block holding the imported source file of the given kind, or None."""
+    if stone is None:
+        return None
+    name = stone.get(SOURCE_PROPS[kind])
+    return bpy.data.texts.get(name) if name else None
+
+
+def setSourceText(stone, kind, text_block):
+    """Remember text_block as the stone's source file and forget other kinds."""
+    for k, prop in SOURCE_PROPS.items():
+        if k == kind:
+            stone[prop] = text_block.name
+        elif prop in stone:
+            del stone[prop]
+
+
+def stlToAscii(raw, solid_name):
+    """Return the STL as ASCII text. Binary STL can't live in a text block, so it is converted."""
+    if len(raw) >= 84:
+        count = struct.unpack_from("<I", raw, 80)[0]
+        if 84 + count * 50 == len(raw):
+            lines = [f"solid {solid_name}"]
+            for i in range(count):
+                v = struct.unpack_from("<12f", raw, 84 + i * 50)
+                lines.append(f"  facet normal {v[0]:e} {v[1]:e} {v[2]:e}")
+                lines.append("    outer loop")
+                for j in (3, 6, 9):
+                    lines.append(f"      vertex {v[j]:e} {v[j+1]:e} {v[j+2]:e}")
+                lines.append("    endloop")
+                lines.append("  endfacet")
+            lines.append(f"endsolid {solid_name}")
+            return "\n".join(lines) + "\n"
+    return raw.decode('utf-8', errors='replace')
 
 
 class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
@@ -41,7 +94,6 @@ class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
     )
 
     def execute(self, context):
-        clearLog()
         clearCutTable()
         set_blender_to_mm()
         if "Cube" in bpy.data.objects:
@@ -52,6 +104,13 @@ class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
         bpy.ops.wm.stl_import(filepath=filepath, use_mesh_validate=self.use_mesh_validate, filter_glob=self.filter_glob)
         scene = context.scene
         scene.concave_machine.stone_pointer = bpy.context.object
+        clearLog()
+        # Keep a copy of the STL in a text block so it can be exported again.
+        with open(filepath, 'rb') as file:
+            raw = file.read()
+        file_name = bpy.path.basename(filepath)
+        setSourceText(bpy.context.object, 'STL',
+                      storeSourceText(file_name, stlToAscii(raw, os.path.splitext(file_name)[0])))
         bpy.ops.transform.rotate(value=math.pi/2, orient_axis='Z', orient_type='GLOBAL')
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
         setStoneLength(self, context)
@@ -72,7 +131,6 @@ class ImportGCSFileOperator(Operator, ImportHelper):
     filter_glob: StringProperty(default="*.gcs", options={'HIDDEN'})
 
     def execute(self, context):
-        clearLog()
         clearCutTable()
         set_blender_to_mm()
         if "Cube" in bpy.data.objects:
@@ -90,13 +148,9 @@ class ImportGCSFileOperator(Operator, ImportHelper):
         except UnicodeDecodeError:
             content = raw_content.decode('cp1252')
 
-        # Save content to Blender Text Editor
+        # Save content to Blender Text Editor, named like the file incl. extension
         text_name = bpy.path.display_name_from_filepath(filepath)
-        text_block = bpy.data.texts.get(text_name)
-        if not text_block:
-            text_block = bpy.data.texts.new(text_name)
-        text_block.clear()
-        text_block.write(content)
+        text_block = storeSourceText(bpy.path.basename(filepath), content)
 
         # Parse GCS XML to extract vertices and faces
         tree = ET.ElementTree(ET.fromstring(content))
@@ -148,6 +202,8 @@ class ImportGCSFileOperator(Operator, ImportHelper):
         obj.select_set(True)
         context.view_layer.objects.active = obj
         context.scene.concave_machine.stone_pointer = obj
+        setSourceText(obj, 'GCS', text_block)
+        clearLog()
 
         if bpy.context.object.mode != 'EDIT':
             bpy.ops.object.mode_set(mode='EDIT')
@@ -160,4 +216,39 @@ class ImportGCSFileOperator(Operator, ImportHelper):
         setStoneLength(self, context)
 
         self.report({'INFO'}, f"GCS file imported and object created: {text_name}")
+        return {'FINISHED'}
+
+
+class Export_OT_source_file(Operator):
+    """Export the imported source file (GCS or STL) of the current stone"""
+    bl_idname = "object.export_source_file"
+    bl_label = "Export source file"
+
+    kind: EnumProperty(items=[('GCS', "GCS", ""), ('STL', "STL", "")], options={'HIDDEN'})
+    filepath: StringProperty(subtype='FILE_PATH')
+    filter_glob: StringProperty(default="*.gcs;*.stl", options={'HIDDEN'})
+
+    @classmethod
+    def description(cls, context, properties):
+        return f"Save the imported {properties.kind} file of the current stone to disk"
+
+    def invoke(self, context, event):
+        text = sourceText(context.scene.concave_machine.stone_pointer, self.kind)
+        if text is None:
+            self.report({'ERROR'}, f"No {self.kind} file stored for this stone")
+            return {'CANCELLED'}
+        self.filter_glob = "*." + self.kind.lower()
+        self.filepath = text.name
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        text = sourceText(context.scene.concave_machine.stone_pointer, self.kind)
+        if text is None:
+            self.report({'ERROR'}, f"No {self.kind} file stored for this stone")
+            return {'CANCELLED'}
+        filepath = bpy.path.ensure_ext(self.filepath, "." + self.kind.lower())
+        with open(filepath, 'w', encoding='utf-8', newline='') as file:
+            file.write(text.as_string())
+        self.report({'INFO'}, f"Saved {filepath}")
         return {'FINISHED'}

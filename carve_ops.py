@@ -176,8 +176,16 @@ def executeApply(self, context):
     return {'FINISHED'}
 
 
+def logName(scene):
+    """Name of the cut log text block of the current stone, e.g. 'Stone_concaveLog.txt'."""
+    stone = scene.concave_machine.stone_pointer
+    if stone is None:
+        return 'concaveLog.txt'
+    return f"{stone.name}_concaveLog.txt"
+
+
 def clearLog():
-    text = bpy.data.texts.get('concaveLog.txt')
+    text = bpy.data.texts.get(logName(bpy.context.scene))
     if text is not None:
         text.clear()
 
@@ -189,11 +197,10 @@ def clearCutTable():
 
 
 def writeLog(scene, isSingleIndex):
-    text = bpy.data.texts.get('concaveLog.txt')
+    name = logName(scene)
+    text = bpy.data.texts.get(name)
     if text is None:
-        bpy.ops.text.new()
-        text = bpy.data.texts[-1]
-        text.name = 'concaveLog.txt'
+        text = bpy.data.texts.new(name)
 
     writeLogHeader(scene, text)
 
@@ -396,8 +403,8 @@ class CleanMesh(bpy.types.Operator):
 
 
 def save_text_file():
-    # Get the first text block or a specific one by name
-    text = bpy.data.texts["concaveLog.txt"]  # or bpy.data.texts["YourTextName"]
+    # Cut log of the current stone
+    text = bpy.data.texts.get(logName(bpy.context.scene))
     if text:
         # Set it as active in a text editor area
         text_area = bpy.context.screen.areas[0]
