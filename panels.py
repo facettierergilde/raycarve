@@ -57,9 +57,9 @@ class FACET_PT_ConcavePanel_ImportStone(FACET_PT_ConcavePanel, bpy.types.Panel):
         # Round Mandrel creation
         box.label(text="Import stone")
         row = box.row(align=True)
-        row.operator("object.import_stl_file")
-        row = box.row(align=True)
         row.operator("import_scene.gcs_file")
+        row = box.row(align=True)
+        row.operator("object.import_stl_file")
         row = box.row(align=True)
         box.label(text="Resize stone to length:")
         row = box.row()

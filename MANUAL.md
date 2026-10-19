@@ -36,13 +36,13 @@ RayCarve simulates faceting by cutting a 3D stone mesh with a "mandrel" mesh (th
 
 ### 2.1 "1. Stone import"
 
+- **Import GCS File** — imports a `.gcs` XML facet-description file (as exported by some faceting design tools). The raw file is also stored as a Blender text block. The facet vertices/faces are parsed, a mesh is built, and a **convex hull** is computed and rotated/scaled the same way as STL import.
 - **Import STL file as Stone** — opens a file browser to import an `.stl` mesh as the stone. Automatically:
   - Deletes the default "Cube" if present.
   - Sets Blender's unit system to Metric / millimeters.
   - Rotates the imported mesh 90° around Z and applies the rotation.
   - Resizes the stone to the **Resize stone to length** value (below).
   - Clears any previous cut log and cut table.
-- **Import GCS File** — imports a `.gcs` XML facet-description file (as exported by some faceting design tools). The raw file is also stored as a Blender text block. The facet vertices/faces are parsed, a mesh is built, and a **convex hull** is computed and rotated/scaled the same way as STL import.
 - **Resize stone to length** — target length (along Y) the stone is scaled to on import or whenever this value changes.
 - **Dimensions** — read-only display of the current stone's width/length/height once one is set.
 

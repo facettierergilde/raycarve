@@ -36,13 +36,13 @@ RayCarve simuliert das Facettieren, indem ein 3D-Steinmodell mit einem Walzenmod
 
 ### 2.1 „1. Stone import"
 
+- **Import GCS File** — importiert eine `.gcs`-XML-Datei mit einer Facettenbeschreibung (wie sie einige Facetten-Designprogramme exportieren). Die Originaldatei wird zusätzlich als Blender-Textblock abgelegt. Aus den Facetten wird ein Mesh aufgebaut, daraus eine **konvexe Hülle** berechnet und wie beim STL-Import gedreht und skaliert.
 - **Import STL file as Stone** — öffnet einen Dateidialog, um ein `.stl`-Modell als Stein zu importieren. Dabei wird automatisch:
   - der Standard-„Cube" gelöscht, falls vorhanden;
   - das Einheitensystem von Blender auf Metrisch / Millimeter gestellt;
   - das Modell um 90° um die Z-Achse gedreht und die Drehung übernommen;
   - der Stein auf den Wert **Resize stone to length** (siehe unten) skaliert;
   - ein bestehendes Schleifprotokoll und die Schleiftabelle geleert.
-- **Import GCS File** — importiert eine `.gcs`-XML-Datei mit einer Facettenbeschreibung (wie sie einige Facetten-Designprogramme exportieren). Die Originaldatei wird zusätzlich als Blender-Textblock abgelegt. Aus den Facetten wird ein Mesh aufgebaut, daraus eine **konvexe Hülle** berechnet und wie beim STL-Import gedreht und skaliert.
 - **Resize stone to length** — Ziel-Länge (entlang Y), auf die der Stein beim Import oder bei jeder Änderung dieses Werts skaliert wird.
 - **Dimensions** — zeigt Breite, Länge und Höhe des aktuellen Steins an (nur Anzeige).
 

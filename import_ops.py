@@ -43,11 +43,11 @@ class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
     def execute(self, context):
         clearLog()
         clearCutTable()
+        set_blender_to_mm()
         if "Cube" in bpy.data.objects:
             bpy.data.objects["Cube"].select_set(True)
             bpy.ops.object.delete()
 
-        set_blender_to_mm()
         filepath = self.filepath
         bpy.ops.wm.stl_import(filepath=filepath, use_mesh_validate=self.use_mesh_validate, filter_glob=self.filter_glob)
         scene = context.scene
@@ -66,6 +66,7 @@ class Import_OT_stl_file(bpy.types.Operator, ImportHelper):
 class ImportGCSFileOperator(Operator, ImportHelper):
     bl_idname = "import_scene.gcs_file"
     bl_label = "Import GCS File"
+    bl_options = {'REGISTER', 'UNDO'}
 
     filename_ext = ".gcs"
     filter_glob: StringProperty(default="*.gcs", options={'HIDDEN'})
