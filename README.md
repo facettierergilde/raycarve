@@ -2,9 +2,12 @@
 
 **A concave faceting machine for Blender.**
 
+### 👉 [facettierergilde.github.io/raycarve](https://facettierergilde.github.io/raycarve) — download the latest version and read the manual
+
 RayCarve is a Blender add-on for simulating and planning gemstone faceting on a concave faceting machine. Import a stone, build a mandrel (cutting wheel), carve facets with Boolean operations using the same controls as a real machine, and keep a log of every cut.
 
-- **Website:** <https://www.facettieren.ch>
+- **Project page & downloads:** <https://facettierergilde.github.io/raycarve>
+- **Facettierergilde Schweiz:** <https://www.facettieren.ch>
 - **Manual:** [English](MANUAL.md) · [Deutsch](MANUAL.de.md)
 - **Requires:** Blender 4.5 or newer
 
@@ -18,7 +21,7 @@ RayCarve is a Blender add-on for simulating and planning gemstone faceting on a 
 
 ## Installation
 
-1. Download `RayCarve-<version>.zip` from the website (do not unzip it).
+1. Download `RayCarve-<version>.zip` from the [project page](https://facettierergilde.github.io/raycarve/#download) (do not unzip it).
 2. In Blender open **Edit → Preferences → Get Extensions**.
 3. Click **⌄** (top right) → **Install from Disk…** and select the ZIP.
 4. In the 3D Viewport press `N` and open the **RayCarve** tab.
