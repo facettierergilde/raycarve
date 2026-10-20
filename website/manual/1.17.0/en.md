@@ -1,6 +1,6 @@
 # RayCarve — User Manual
 
-**RayCarve** is a Blender add-on for simulating and planning gemstone faceting on a concave/cabbing faceting machine. It lets you import a stone, create mandrels (cutting wheels), carve facets using boolean operations, log every cut, and optionally sync the in-progress stone to the companion renderer **RayView** (Concave Ray Vision) for a live, ray-traced preview.
+**RayCarve** is a Blender add-on for simulating and planning gemstone faceting on a concave/cabbing faceting machine. It lets you import a stone, create mandrels (cutting wheels), carve facets using boolean operations, log every cut, and optionally sync the in-progress stone to the companion renderer **RayView** for a live, ray-traced preview.
 
 Version: 1.16.0 — Author: Tobias Wüthrich
 
@@ -166,16 +166,16 @@ Mechanically: the addon exports the visible stone (with modifiers applied) as a 
 
 ## 5. Live rendering with RayView
 
-**RayView** (Concave Ray Vision) is the companion renderer to RayCarve, also developed by the Facettierer Gilde Schweiz. It ray-traces light through the stone in real time — multiple internal bounces, refractive index (IOR), dispersion and Fresnel reflections — against HDRI or skybox environments. Together with RayCarve's **Render synchronisation** it shows how the stone you're cutting will actually sparkle, updated after every cut.
+**RayView** is the companion renderer to RayCarve, also developed by the Facettierer Gilde Schweiz. It ray-traces light through the stone in real time — multiple internal bounces, refractive index (IOR), dispersion and Fresnel reflections — against HDRI or skybox environments. Together with RayCarve's **Render synchronisation** it shows how the stone you're cutting will actually sparkle, updated after every cut.
 
 Source code and releases: <https://github.com/facettierergilde/rayview>
 
 ### 5.1 Download & installation (Windows)
 
 1. Open the latest release: <https://github.com/facettierergilde/rayview/releases/latest>
-2. Under **Assets**, download `ConcaveRayVision-v<version>-win-x64.zip` (at the time of writing: [v1.0.0](https://github.com/facettierergilde/rayview/releases/download/v1.0.0/ConcaveRayVision-v1.0.0-win-x64.zip)).
-3. Unzip it into a folder of your choice (e.g. `C:\Programs\ConcaveRayVision`).
-4. Start `concaverayvision.exe`. The sync server for RayCarve starts automatically with the app.
+2. Under **Assets**, download `ConcaveRayView-v<version>-win-x64.zip` (at the time of writing: [v1.0.1](https://github.com/facettierergilde/rayview/releases/download/v1.0.1/ConcaveRayView-v1.0.1-win-x64.zip)).
+3. Unzip it into a folder of your choice (e.g. `C:\Programs\RayView`).
+4. Start `concaverayview.exe`. The sync server for RayCarve starts automatically with the app.
 
 Windows may show a SmartScreen warning the first time, because the app is not code-signed: click **More info → Run anyway**. If the Windows firewall asks, allow access for private networks (the app only listens locally on ports 3000 and 3001).
 

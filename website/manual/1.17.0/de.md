@@ -1,6 +1,6 @@
 # RayCarve — Benutzerhandbuch
 
-**RayCarve** ist eine Blender-Erweiterung zum Simulieren und Planen von Edelsteinschliffen auf einer Konkav-Facettiermaschine. Du kannst damit einen Stein importieren, Walzen (Schleifwerkzeuge) erzeugen, Facetten mit Boolean-Operationen schleifen, jeden Schnitt protokollieren und den Stein optional live an den Begleit-Renderer **RayView** (Concave Ray Vision) senden, der ihn in Echtzeit raytracet.
+**RayCarve** ist eine Blender-Erweiterung zum Simulieren und Planen von Edelsteinschliffen auf einer Konkav-Facettiermaschine. Du kannst damit einen Stein importieren, Walzen (Schleifwerkzeuge) erzeugen, Facetten mit Boolean-Operationen schleifen, jeden Schnitt protokollieren und den Stein optional live an den Begleit-Renderer **RayView** senden, der ihn in Echtzeit raytracet.
 
 Version: 1.16.0 — Autor: Tobias Wüthrich
 
@@ -168,16 +168,16 @@ Technisch exportiert die Erweiterung den sichtbaren Stein (mit angewendeten Modi
 
 ## 5. Live-Rendering mit RayView
 
-**RayView** (Concave Ray Vision) ist der Begleit-Renderer zu RayCarve und wird ebenfalls von der Facettierergilde Schweiz entwickelt. Er verfolgt das Licht in Echtzeit durch den Stein — mit mehrfachen inneren Reflexionen, Brechungsindex (IOR), Dispersion und Fresnel-Reflexion — vor HDRI- oder Skybox-Umgebungen. Zusammen mit der **Render synchronisation** von RayCarve siehst du nach jedem Schnitt, wie der Stein tatsächlich funkeln wird.
+**RayView** ist der Begleit-Renderer zu RayCarve und wird ebenfalls von der Facettierergilde Schweiz entwickelt. Er verfolgt das Licht in Echtzeit durch den Stein — mit mehrfachen inneren Reflexionen, Brechungsindex (IOR), Dispersion und Fresnel-Reflexion — vor HDRI- oder Skybox-Umgebungen. Zusammen mit der **Render synchronisation** von RayCarve siehst du nach jedem Schnitt, wie der Stein tatsächlich funkeln wird.
 
 Quellcode und Releases: <https://github.com/facettierergilde/rayview>
 
 ### 5.1 Download & Installation (Windows)
 
 1. Die neueste Version öffnen: <https://github.com/facettierergilde/rayview/releases/latest>
-2. Unter **Assets** die Datei `ConcaveRayVision-v<version>-win-x64.zip` herunterladen (aktuell: [v1.0.0](https://github.com/facettierergilde/rayview/releases/download/v1.0.0/ConcaveRayVision-v1.0.0-win-x64.zip)).
-3. In einen beliebigen Ordner entpacken (z. B. `C:\Programme\ConcaveRayVision`).
-4. `concaverayvision.exe` starten. Der Sync-Server für RayCarve startet automatisch mit.
+2. Unter **Assets** die Datei `ConcaveRayView-v<version>-win-x64.zip` herunterladen (aktuell: [v1.0.1](https://github.com/facettierergilde/rayview/releases/download/v1.0.1/ConcaveRayView-v1.0.1-win-x64.zip)).
+3. In einen beliebigen Ordner entpacken (z. B. `C:\Programme\RayView`).
+4. `concaverayview.exe` starten. Der Sync-Server für RayCarve startet automatisch mit.
 
 Beim ersten Start kann Windows eine SmartScreen-Warnung anzeigen, da die App nicht signiert ist: **Weitere Informationen → Trotzdem ausführen** wählen. Fragt die Windows-Firewall nach, den Zugriff für private Netzwerke erlauben (die App lauscht nur lokal auf den Ports 3000 und 3001).
 
